@@ -16,6 +16,8 @@ jobs:
           fetch-depth: 0
 
       # TODO build, test and deploy project
+      - name: Build
+        run: docker-compose up -d
 
       - name: Run API Tests
         uses: matt-ball/newman-action@master
@@ -38,3 +40,14 @@ jobs:
           user_column: 'D'
           column_offset: 'F'
           mark: "'+"
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.13.15 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "Person web api"
+          heroku_email: "tronis02@gmail.com"
+          usedocker: true
