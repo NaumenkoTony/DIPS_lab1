@@ -17,8 +17,7 @@ jobs:
 
       # TODO build, test and deploy project
       - name: Docker build
-        uses: hoverkraft-tech/compose-action@v0.0.0
-          
+        uses: hoverkraft-tech/compose-action@v2.0.1
 
       - name: Run API Tests
         uses: matt-ball/newman-action@master
