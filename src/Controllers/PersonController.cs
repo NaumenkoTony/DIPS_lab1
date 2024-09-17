@@ -1,0 +1,95 @@
+namespace DIPS_lab01.Controllers;
+
+using DIPS_lab01.Models;
+using DIPS_lab01.Data;
+using Microsoft.AspNetCore.Mvc;
+
+public class PersonsController(IRepository<Person> personRepository) : ControllerBase
+{
+    private readonly IRepository<Person> personRepository = personRepository;
+
+    [Route("api/v1/[controller]")]
+    [EndpointSummary("Get all Persons")]
+    [HttpGet]
+    public ActionResult<IEnumerable<Person>> GetAll()
+    {
+        var persons = personRepository.Read();
+        return Ok(persons);
+    }
+
+    [Route("api/v1/[controller]/{id}")]
+    [EndpointSummary("Get Person by ID")]
+    [HttpGet]
+    public ActionResult<Person> GetById(int id)
+    {
+        var person = personRepository.Read(id);
+        if (person == null)
+        {
+            return NotFound(new { message = "Person not found" });
+        }
+        return Ok(person);
+    }
+
+    [Route("api/v1/[controller]")]
+    [EndpointSummary("Create new Person")]
+    [HttpPost]
+    public ActionResult Create([FromBody] Person personRequest)
+    {
+        if (string.IsNullOrEmpty(personRequest.Name))
+        {
+            return BadRequest(new { message = "Invalid data", errors = new { name = "Name is required" } });
+        }
+
+        var person = new Person
+        {
+            Name = personRequest.Name,
+            Age = personRequest.Age,
+            Address = personRequest.Address,
+            Work = personRequest.Work
+        };
+
+        personRepository.Create(person);
+
+        return CreatedAtAction(nameof(GetById), new { id = person.Id }, null);
+    }
+
+    [Route("api/v1/[controller]/{id}")]
+    [EndpointSummary("Remove Person by ID")]
+    [HttpDelete]
+    public IActionResult Delete(int id)
+    {
+        var person = personRepository.Read(id);
+        if (person == null)
+        {
+            return NotFound(new { message = "Person not found" });
+        }
+
+        personRepository.Delete(id);
+        return NoContent();
+    }
+
+    [Route("api/v1/[controller]/{id}")]
+    [EndpointSummary("Update Person by ID")]
+    [HttpPatch]
+    public ActionResult Update(int id, [FromBody] Person personRequest)
+    {
+        var person = personRepository.Read(id);
+        if (person == null)
+        {
+            return NotFound(new { message = "Person not found" });
+        }
+
+        if (string.IsNullOrEmpty(personRequest.Name))
+        {
+            return BadRequest(new { message = "Invalid data", errors = new { name = "Name is required" } });
+        }
+
+        person.Name = personRequest.Name;
+        person.Age = personRequest.Age;
+        person.Address = personRequest.Address;
+        person.Work = personRequest.Work;
+
+        personRepository.Update(person);
+        return Ok(person);
+    }
+}
