@@ -15,10 +15,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Docker build
-        uses: hoverkraft-tech/compose-action@v2.0.1
-     
-      - name: Testing
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Docker Compose Build
+        run: |
+          docker-compose up -d webapi
+
+      - name: Run Unit Tests
         run: |
           docker-compose up tests
 
