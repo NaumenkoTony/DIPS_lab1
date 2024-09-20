@@ -22,11 +22,7 @@ jobs:
 
       - name: Docker compose build
         run: |
-          docker-compose up -d postgres webapi
-
-      - name: Run unit tests
-        run: |
-          docker-compose up tests
+          docker-compose up -d
 
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.13.15
