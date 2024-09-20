@@ -69,9 +69,9 @@ public class PersonsController(IRepository<Person> personRepository) : Controlle
     }
 
     [Route("api/v1/[controller]/{id}")]
-    [EndpointSummary("Update Person by ID")]
+    [EndpointSummary("Patch Person by ID")]
     [HttpPatch]
-    public ActionResult Update(int id, [FromBody] Person personRequest)
+    public ActionResult Patch(int id, [FromBody] Person personRequest)
     {
         var person = personRepository.Read(id);
         if (person == null)
@@ -79,15 +79,16 @@ public class PersonsController(IRepository<Person> personRepository) : Controlle
             return NotFound(new { message = "Person not found" });
         }
 
-        if (string.IsNullOrEmpty(personRequest.Name))
-        {
-            return BadRequest(new { message = "Invalid data", errors = new { name = "Name is required" } });
-        }
+        var properties = typeof(Person).GetProperties();
 
-        person.Name = personRequest.Name;
-        person.Age = personRequest.Age;
-        person.Address = personRequest.Address;
-        person.Work = personRequest.Work;
+        foreach (var property in properties)
+        {
+            var newValue = property.GetValue(personRequest);
+            if (newValue != null && !(newValue is string && string.IsNullOrEmpty((string)newValue)))
+            {
+                property.SetValue(person, newValue);
+            }
+        }
 
         personRepository.Update(person);
         return Ok(person);
