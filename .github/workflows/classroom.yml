@@ -52,6 +52,11 @@ jobs:
           apiKey: ${{ secrets.RENDER_API_KEY }}
           multipleDeployment: false
 
+      - name: Initialize Database
+        run: |
+          PGPASSWORD=${{ secrets.DB_PASSWORD }} psql -h ${{ secrets.DB_HOST }} -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }} -f ./postgres/11-create-tables.sql
+
+
       - name: Run API Tests
         uses: matt-ball/newman-action@master
         with:
