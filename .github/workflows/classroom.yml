@@ -8,7 +8,7 @@ on:
       - master
 jobs:
   build:
-    name: Autograding
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -25,11 +25,19 @@ jobs:
           docker-compose up -d
     
   test:
-    - name: Run unit tests
-      run: |
-        docker-compose --profile tests run tests
+    name: Unit test
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Run unit tests
+        run: |
+          docker-compose --profile tests run tests
 
   deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
     - name: Deploy to render
       uses: ashishkujoy/render-ci-deploy@v1.0.1
       with:
