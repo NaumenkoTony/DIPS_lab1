@@ -23,6 +23,10 @@ jobs:
       - name: Docker compose build
         run: |
           docker-compose up -d
+      
+      - name: Run unit tests
+        run: |
+          docker-compose --profile tests run tests
 
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.13.15

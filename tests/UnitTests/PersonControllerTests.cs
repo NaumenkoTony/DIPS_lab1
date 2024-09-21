@@ -143,7 +143,7 @@ public class PersonControllerTests
     }
 
     [Fact]
-    public void UpdateOk()
+    public void PatchOk()
     {
         // Arrange
         var personId = 1;
@@ -154,7 +154,7 @@ public class PersonControllerTests
         mockRepository.Setup(repository => repository.Update(It.IsAny<Person>()));
 
         // Act
-        var result = controller.Update(personId, newPerson);
+        var result = controller.Patch(personId, newPerson);
 
         // Assert
         var httpResponse = Assert.IsType<OkObjectResult>(result);
@@ -168,7 +168,7 @@ public class PersonControllerTests
     }
 
     [Fact]
-    public void UpdateNotFound()
+    public void PatchNotFound()
     {
         // Arrange
         var personId = 1;
@@ -177,7 +177,7 @@ public class PersonControllerTests
         mockRepository.Setup(repository => repository.Read(personId)).Returns(oldPerson);
 
         // Act
-        var result = controller.Update(2, newPerson);
+        var result = controller.Patch(2, newPerson);
 
         // Assert
         var httpResponse = Assert.IsType<NotFoundObjectResult>(result);
@@ -185,17 +185,16 @@ public class PersonControllerTests
     }
 
     [Fact]
-    public void UpdateBadRequest()
+    public void PatchBadRequest()
     {
         // Arrange
         var personId = 1;
         Person oldPerson = new() { Id = personId, Name = "Alex" };
-        Person newPerson = new() { Id = personId, Age = 20, Address = "Moscow", Work = "Developer" };
 
         mockRepository.Setup(repository => repository.Read(personId)).Returns(oldPerson);
 
         // Act
-        var result = controller.Update(personId, newPerson);
+        var result = controller.Patch(personId, null);
 
         // Assert
         var httpResponse = Assert.IsType<BadRequestObjectResult>(result);

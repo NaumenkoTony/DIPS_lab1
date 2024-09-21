@@ -56,7 +56,7 @@ public class PersonsController(IRepository<Person> personRepository) : Controlle
     [Route("api/v1/[controller]/{id}")]
     [EndpointSummary("Remove Person by ID")]
     [HttpDelete]
-    public IActionResult Delete(int id)
+    public ActionResult Delete(int id)
     {
         var person = personRepository.Read(id);
         if (person == null)
@@ -73,6 +73,11 @@ public class PersonsController(IRepository<Person> personRepository) : Controlle
     [HttpPatch]
     public ActionResult Patch(int id, [FromBody] Person personRequest)
     {
+        if (personRequest == null)
+        {
+            return BadRequest(new { message = "Request body cannot be null." });
+        }
+
         var person = personRepository.Read(id);
         if (person == null)
         {
@@ -83,6 +88,11 @@ public class PersonsController(IRepository<Person> personRepository) : Controlle
 
         foreach (var property in properties)
         {
+            if (property.Name == nameof(Person.Id))
+            {
+                continue;
+            }
+
             var newValue = property.GetValue(personRequest);
             if (newValue != null && !(newValue is string && string.IsNullOrEmpty((string)newValue)))
             {
@@ -91,6 +101,7 @@ public class PersonsController(IRepository<Person> personRepository) : Controlle
         }
 
         personRepository.Update(person);
+
         return Ok(person);
     }
 }
